@@ -2,7 +2,10 @@ package com.zeab.tvturner2.service
 
 object AppConf {
 
-  val channelsJsonPath: String = "channels.json"
+  val channelsPath: String = "channels.json"
+  val xmlTvPath: String = "xmltv.xml"
+  val schedulePath: String = "schedule.json"
+  val tempPath: String = "temp"
 
   val httpServicePort: Int = 8080
   val httpServiceHost: String = "0.0.0.0"

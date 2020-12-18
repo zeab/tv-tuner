@@ -32,7 +32,7 @@ trait Lineup extends Directives with FileHelpers {
     path("lineup.json") {
       get {
         val lineup: String =
-          Try(Files.readAllLines(Paths.get(AppConf.channelsJsonPath))) match {
+          Try(Files.readAllLines(Paths.get(AppConf.channelsPath))) match {
             case Failure(exception: Throwable) => throw exception
             case Success(lines: util.List[String]) =>
               decode[List[ChannelDefinition]](lines.asScala.toList.mkString) match {

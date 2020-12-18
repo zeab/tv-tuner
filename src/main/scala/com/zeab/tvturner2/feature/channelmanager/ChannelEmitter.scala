@@ -7,28 +7,31 @@ import akka.stream.Materializer
 import akka.stream.scaladsl.FileIO
 import akka.util.ByteString
 import com.zeab.tvturner2.feature.channel.model.Get
-import com.zeab.tvturner2.service.FileHelpers
+import com.zeab.tvturner2.service.{AppConf, FileHelpers}
 
 import scala.concurrent.ExecutionContext
 
-class ChannelEmitter(implicit mat: Materializer) extends Actor with FileHelpers {
+class ChannelEmitter(implicit mat: Materializer) extends Actor with FileHelpers with FFmpegStuff {
 
   implicit val ec: ExecutionContext = context.system.dispatcher
+
+  val temp = new File(AppConf.tempPath)
 
   def receive: Receive = queue()
 
   def queue(q: List[ByteString] = List.empty): Receive = {
     case x: String =>
 
-      val temp = new File("temp")
-      temp.mkdir()
+      println(s"splitting $x")
+      split(new File(x))
 
       val filesToLoad =
-        listAllFiles(temp).filter(_.getName.contains(x))
+        listAllFiles(temp).filter(_.getName.contains(new File(x).getName))
       filesToLoad.foreach{ file =>
         FileIO
           .fromPath(file.toPath, 4096)
           .runForeach { item: ByteString => self ! item }
+          .onComplete(_ => file.delete())
       }
     case Get =>
       //TODO Rather than getting the next on i need the current packet of data
@@ -43,8 +46,6 @@ class ChannelEmitter(implicit mat: Materializer) extends Actor with FileHelpers 
         case None =>
           println("no more")
       }
-    case x: ActorRef =>
-    //add this actor the the actors that need to be told about the data
     case x: ByteString =>
       //println("added")
       context.become(queue(q ++ List(x)))

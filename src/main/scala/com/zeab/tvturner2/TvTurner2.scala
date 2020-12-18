@@ -1,5 +1,8 @@
 package com.zeab.tvturner2
 
+import java.time.{ZoneId, ZonedDateTime}
+import java.time.format.{DateTimeFormatter, DateTimeFormatterBuilder}
+
 import akka.actor.{ActorSystem, Props}
 import akka.http.scaladsl.Http
 import akka.stream.Materializer
@@ -18,7 +21,7 @@ object TvTurner2 extends App with HttpServiceBase with FileHelpers{
   implicit val mat: Materializer = Materializer(system)
 
   //Channel Manager
-  val channelManager = system.actorOf(Props(classOf[ChannelManager], mat))
+  val channelManager = system.actorOf(Props(classOf[ChannelManager], mat), "ChannelManager")
 
   //Service Bindings
   val bindingFuture = Http().bindAndHandle(route, AppConf.httpServiceHost, AppConf.httpServicePort)

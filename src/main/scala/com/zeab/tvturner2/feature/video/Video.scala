@@ -27,23 +27,23 @@ trait Video extends Directives {
   //Part of the TvTuner API were mocking
   val video: Route =
     extractActorSystem { implicit system =>
-      extractExecutionContext{implicit ec =>
+      extractExecutionContext { implicit ec =>
         path("video") {
           get {
             parameters("channel") { channelNumber: String =>
-              implicit val timeout: Timeout = Timeout(5.second)
+              implicit val timeout: Timeout = Timeout(30.second)
 
-              println(s"looking for actor user/A$channelNumber")
-              onComplete(system.actorSelection("user/A2").resolveOne()) {
-                case Success(actorRef) =>
+              println(s"looking for actor user/Channel$channelNumber")
+              onComplete(system.actorSelection(s"user/Channel$channelNumber").resolveOne()) {
+                case Success(actorRef: ActorRef) =>
                   val channelSource: Source[ByteString, NotUsed] =
-                    Source.repeat(Get)
-                      .throttle(
-                        30,
-                        1.second,
-                        30 * 30,
-                        ThrottleMode.Shaping
-                      )
+                    Source.repeat(Get).throttle(30, 1.second)
+//                      .throttle(
+//                        30,
+//                        1.second,
+//                        30 * 30,
+//                        ThrottleMode.Shaping
+//                      )
                       .map { ss =>
                         println(s"moose ${UUID.randomUUID()}")
                         ss
@@ -57,7 +57,7 @@ trait Video extends Directives {
                     )
                   )
 
-                case Failure(ex) => //Logger.warn("user/" + "somename" + " does not exist")
+                case Failure(_) =>
                   println("cant find the actor")
                   complete(
                     HttpResponse(
