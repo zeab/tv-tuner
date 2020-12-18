@@ -37,13 +37,13 @@ trait Video extends Directives {
               onComplete(system.actorSelection(s"user/Channel$channelNumber").resolveOne()) {
                 case Success(actorRef: ActorRef) =>
                   val channelSource: Source[ByteString, NotUsed] =
-                    Source.repeat(Get).throttle(30, 1.second)
-//                      .throttle(
-//                        30,
-//                        1.second,
-//                        30 * 30,
-//                        ThrottleMode.Shaping
-//                      )
+                    Source.repeat(Get)//.throttle(60, 1.second)
+                      .throttle(
+                        60,
+                        1.second,
+                        10000,
+                        ThrottleMode.Shaping
+                      )
                       .map { ss =>
                         println(s"moose ${UUID.randomUUID()}")
                         ss

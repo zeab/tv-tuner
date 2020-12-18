@@ -9,7 +9,7 @@ import java.util.UUID
 import akka.actor.{Actor, Props}
 import akka.stream.Materializer
 import com.zeab.tvturner2.feature.xmltv.models.Schedule
-import com.zeab.tvturner2.service.{AppConf, DateTimeFormatters, FileHelpers}
+import com.zeab.tvturner2.service.{AppConf, DateTimeFormatters, FFmpegStuff, FileHelpers}
 import io.circe
 import io.circe.generic.auto._
 import io.circe.parser.decode

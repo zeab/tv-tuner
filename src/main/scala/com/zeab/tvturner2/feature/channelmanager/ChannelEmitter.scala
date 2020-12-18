@@ -7,7 +7,7 @@ import akka.stream.Materializer
 import akka.stream.scaladsl.FileIO
 import akka.util.ByteString
 import com.zeab.tvturner2.feature.channel.model.Get
-import com.zeab.tvturner2.service.{AppConf, FileHelpers}
+import com.zeab.tvturner2.service.{AppConf, FFmpegStuff, FileHelpers}
 
 import scala.concurrent.ExecutionContext
 
@@ -20,19 +20,28 @@ class ChannelEmitter(implicit mat: Materializer) extends Actor with FileHelpers 
   def receive: Receive = queue()
 
   def queue(q: List[ByteString] = List.empty): Receive = {
+    case x: List[File] =>
+      x.headOption match {
+        case Some(file: File) =>
+          FileIO
+            .fromPath(file.toPath, 4096)
+            .runForeach { item: ByteString => self ! item }
+            .onComplete{_ =>
+              self ! x.drop(1)
+              file.delete()
+            }
+        case None => println("list is empty but thats ok sometimes i think")
+      }
     case x: String =>
 
       println(s"splitting $x")
       split(new File(x))
 
       val filesToLoad =
-        listAllFiles(temp).filter(_.getName.contains(new File(x).getName))
-      filesToLoad.foreach{ file =>
-        FileIO
-          .fromPath(file.toPath, 4096)
-          .runForeach { item: ByteString => self ! item }
-          .onComplete(_ => file.delete())
-      }
+        listAllFiles(temp).filter(_.getName.contains(new File(x).getName)).toList
+
+      self ! filesToLoad
+
     case Get =>
       //TODO Rather than getting the next on i need the current packet of data
       //and then send it back to the sender
