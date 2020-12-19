@@ -39,10 +39,8 @@ trait Video extends Directives {
                   val channelSource: Source[ByteString, NotUsed] =
                     Source.repeat(Get)//.throttle(60, 1.second)
                       .throttle(
-                        60,
-                        1.second,
-                        10000,
-                        ThrottleMode.Shaping
+                        1,
+                        9999999.second
                       )
                       .map { ss =>
                         println(s"moose ${UUID.randomUUID()}")
@@ -56,7 +54,6 @@ trait Video extends Directives {
                       entity = HttpEntity(`video/ts`, channelSource)
                     )
                   )
-
                 case Failure(_) =>
                   println("cant find the actor")
                   complete(

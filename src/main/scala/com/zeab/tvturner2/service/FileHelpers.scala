@@ -4,11 +4,16 @@ import java.io.{BufferedWriter, File, FileWriter}
 
 trait FileHelpers {
 
+  def listAllFiles(path: String): Array[File] = {
+    val files: File = new File(path)
+    listAllFiles(files)
+  }
+
   def listAllFiles(files: File): Array[File] = {
     val rootFiles: Array[File] = files.listFiles
     val allFiles: Array[File] =
       if (rootFiles == null) Array.empty
-      else rootFiles ++ rootFiles.filter(_.isDirectory).flatMap(listAllFiles)
+      else rootFiles ++ rootFiles.filter(_.isDirectory).flatMap((file: File) => listAllFiles(file))
     allFiles.filterNot(_.isDirectory)
   }
 
