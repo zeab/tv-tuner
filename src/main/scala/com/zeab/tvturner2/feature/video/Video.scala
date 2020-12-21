@@ -36,17 +36,20 @@ trait Video extends Directives {
               println(s"looking for actor user/Channel$channelNumber")
               onComplete(system.actorSelection(s"user/Channel$channelNumber").resolveOne()) {
                 case Success(actorRef: ActorRef) =>
-                  val channelSource: Source[ByteString, NotUsed] =
-                    Source.repeat(Get)//.throttle(60, 1.second)
+                  val channelSource =
+                    Source.repeat(Get)
                       .throttle(
                         1,
-                        9999999.second
+                        30.second
                       )
+                      .ask[List[ByteString]](parallelism = 1)(actorRef)
                       .map { ss =>
+                        val oo = ss.flatten
                         println(s"moose ${UUID.randomUUID()}")
+                        val sss = ss.map(dd => dd)
                         ss
+                        ByteString(oo: _*)
                       }
-                      .ask[ByteString](parallelism = 1)(actorRef)
 
                   complete(
                     HttpResponse(
