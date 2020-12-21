@@ -1,10 +1,12 @@
 package com.zeab.tvturner2.feature.channelmanager
 
+import java.time.ZonedDateTime
+
 import akka.Done
 import akka.actor.Actor
 import akka.util.ByteString
 
-class FileOpener(name: String) extends Actor{
+class FileOpener(name: String, duration: Double, startDateTime: ZonedDateTime, endDateTime: ZonedDateTime) extends Actor{
 
   def receive: Receive = queue()
 
@@ -12,7 +14,7 @@ class FileOpener(name: String) extends Actor{
     case incomingData: ByteString =>
       context.become(queue(q ++ List(incomingData)))
     case _: Done =>
-      sender() ! MediaPiece(name, 0.0, q)
+      sender() ! MediaPiece(name, duration, startDateTime, endDateTime, q)
       context.stop(self)
   }
 

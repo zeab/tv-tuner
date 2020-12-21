@@ -75,7 +75,7 @@ class ChannelManager(implicit mat: Materializer) extends Actor with FFmpegStuff 
                   }
                 context.become(queue(newChannels, onDeckItems))
               }
-              context.system.scheduler.scheduleOnce(300.second) {
+              context.system.scheduler.scheduleOnce(30.second) {
                 self ! Start
               }
           }
