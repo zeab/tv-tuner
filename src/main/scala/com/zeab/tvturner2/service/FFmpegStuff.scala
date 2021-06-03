@@ -35,7 +35,7 @@ trait FFmpegStuff {
 //    val xx = BigDecimal(frameRate * segmentLength).setScale(2, RoundingMode.DOWN)
 //    Process(s"""${AppConf.ffmpegPath} -i ${file.getAbsoluteFile} -c:v libx265 -c:a copy -map 0 -segment_time $segmentLength -reset_timestamps 1 -sc_threshold 0 -force_key_frames "expr:gte(t,n_forced*$xx)" -f segment ${new File(AppConf.tempPath).getAbsolutePath}/${file.getName}%03d.ts""").!
 
-     Process(s"""${AppConf.ffmpegPath} -i ${file.getAbsoluteFile} -codec copy -map 0 -segment_time 30 -reset_timestamps 1 -sc_threshold 0 -f segment ${new File(AppConf.tempPath).getAbsolutePath}/${file.getName}%03d.ts""").!
+     Process(s"""${AppConf.ffmpegPath} -i ${file.getAbsoluteFile} -codec copy -map 0 -segment_time 8 -reset_timestamps 1 -sc_threshold 0 -f segment ${new File(AppConf.tempPath).getAbsolutePath}/${file.getName}%03d.ts""").!
 
   }
 

@@ -32,15 +32,15 @@ class ChannelManager(implicit mat: Materializer) extends Actor with FFmpegStuff 
 
   def receive: Receive = queue()
 
+
+  //TODO Make this better...
+  //Make the temp dir and delete all the files there
+  val temp = new File(AppConf.tempPath)
+  temp.mkdir()
+  listAllFiles(temp).map(_.delete())
+
   def queue(channels: List[ActorRef] = List.empty, currentItems: List[Schedule] = List.empty): Receive = {
     case Start =>
-
-      //TODO Make this better...
-      //Make the temp dir and delete all the files there
-      val temp = new File(AppConf.tempPath)
-      temp.mkdir()
-      listAllFiles(temp).map(_.delete())
-
       Try(Files.readAllLines(Paths.get(AppConf.schedulePath))) match {
         case Failure(exception: Throwable) => throw exception
         case Success(lines: util.List[String]) =>
@@ -51,8 +51,8 @@ class ChannelManager(implicit mat: Materializer) extends Actor with FFmpegStuff 
 
               val onDeckItems: List[Schedule] =
                 schedules.filter { schedule: Schedule =>
-                  now.isAfter(ZonedDateTime.parse(schedule.startTime, standardDateTimeFormat)) &
-                    now.isBefore(ZonedDateTime.parse(schedule.endTime, standardDateTimeFormat))
+                  now.isAfter(ZonedDateTime.parse(schedule.startTime, standardDateTimeFormat).minusMinutes(5)) &
+                    now.isBefore(ZonedDateTime.parse(schedule.endTime, standardDateTimeFormat).minusMinutes(5))
                 }
 
               if (onDeckItems == currentItems) {

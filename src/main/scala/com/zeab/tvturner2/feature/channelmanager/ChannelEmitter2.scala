@@ -75,7 +75,7 @@ class ChannelEmitter2(implicit mat: Materializer) extends Actor with FileHelpers
             .onComplete { _ =>
               fileOpener ! Done
               self ! files.drop(1)
-              file.delete()
+              //file.delete()
             }
         case None =>
           println(s"everything is loaded ${data.size}")

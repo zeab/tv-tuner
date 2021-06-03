@@ -1,0 +1,17 @@
+[
+  {
+    "GuideNumber" : "1",
+    "GuideName" : "Test1",
+    "URL" : "http://localhost:8080/video?channel=1"
+  },
+  {
+    "GuideNumber" : "2",
+    "GuideName" : "Test2",
+    "URL" : "http://localhost:8080/video?channel=2"
+  },
+  {
+    "GuideNumber" : "3",
+    "GuideName" : "Test3",
+    "URL" : "http://localhost:8080/video?channel=3"
+  }
+]

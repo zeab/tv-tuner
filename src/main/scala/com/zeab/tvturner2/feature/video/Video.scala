@@ -40,7 +40,7 @@ trait Video extends Directives {
                     Source.repeat(Get)
                       .throttle(
                         1,
-                        30.second
+                        9.second
                       )
                       .ask[List[ByteString]](parallelism = 1)(actorRef)
                       .map { ss =>
